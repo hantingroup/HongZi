@@ -54,12 +54,12 @@ def all_lex_names():
 
 
 @app.get("/list/{name}")
-async def lex_values(name: str) -> Sequence[str]:
+async def lex_values(name: str, prefix: str = "") -> Sequence[str]:
     if lex := LexLoader.loaded.get(name):
         data = await lex.data()
         if isinstance(data, str):
             return list(data)
-        return data.keys()
+        return list(data.iterkeys(prefix=prefix))
     raise HTTPException(status_code=404, detail=f"{name} not found")
 
 
