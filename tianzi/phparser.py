@@ -428,12 +428,14 @@ async def Calculate(mch: Match) -> SupportsStr:
     cache_vars = result_cache.caches.get("Ret", {})
 
     inner_cache_vars = {
-        f"Inner_{field}_{name}": calc_cache.get(field, name, "") for field in calc_cache.caches for name in calc_cache.caches[field]
+        f"Inner_{field}_{name}": calc_cache.get(field, name, "")
+        for field in calc_cache.caches
+        for name in calc_cache.caches[field]
     }
 
     # 绿色版不带沙盒功能，直接exec执行
     retvars = {**cache_vars, **inner_cache_vars}
-    retstr = str(eval(main, retvars))
+    retstr = str(eval(main, {"__builtins__": None}, retvars))
     errno = 0
 
     errno: int
