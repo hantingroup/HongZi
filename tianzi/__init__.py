@@ -26,8 +26,6 @@ async def tianzi_core(raw: str, initial_var: dict | None = None) -> str:
         translated = "正则超时。您的输入可能太长或太复杂。"
     except Exception as e:
         translated = f"意外的错误：{repr(e)}，栈如下：\n{traceback.format_exc()}\n请联系找北。"
-    if phparser.CurrentStat.censor:
-        translated = translated  # censor(translated)
     ret_msg = regex.sub(
         CRASHACTER, lambda char: f"U+{hex(ord(char.group(0)))[2:].upper()}", translated.removeprefix("\n").removeprefix(" "))
     logger.info(f"CALL STACK: {"".join(phparser.CALL_STACK)}")

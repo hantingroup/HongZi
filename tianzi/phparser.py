@@ -205,17 +205,6 @@ def reset(intial_result_cache: dict[str, SupportsStr] | None = None):
     lexloaders.BatchedFunc.reset_all_pools()
 
 
-def set_new_otp(exp=60):
-    global OTP, OTP_EXPIRE
-    if OTP_EXPIRE and OTP_EXPIRE[-1] > time.monotonic():
-        # 已经有正在使用的验证码，直接刷新有效时长，不更新验证码
-        OTP_EXPIRE[-1] = time.monotonic() + exp
-    else:
-        OTP.append("".join(secrets.choice("0123456789ABCDEFGHKLMNPRSTUWXY") for _ in range(6)))
-        OTP_EXPIregex.append(time.monotonic() + exp)
-    return OTP[-1]
-
-
 def check_otp(otp: str) -> int:
     otp = otp.upper()
     for valid, exp in zip(OTP, OTP_EXPIRE):
@@ -295,8 +284,6 @@ class _Stat:
 
     max_calc_output_length = 512
 
-    censor: bool = True
-
     linger_names: set[str] | None = None
     linger_name: str | None = None
 
@@ -324,28 +311,6 @@ def check_cache_name(cn: str):
 
 
 # region translators
-@translator("nocensor\\s*(?P<otp>([0-9A-Z]{6}))?")
-async def Nocensor(mch: Match) -> SupportsStr:
-    """临时关闭屏蔽词系统"""
-    logger.info(f"Nocensor ← {mch.groupdict()}")
-    otp = group(mch, "otp")
-    if otp:
-        if (chk := check_otp(otp)) == 0:
-            CurrentStat.censor = False
-            return ""
-        elif chk == 1:
-            return breakout(mch, "[E21.1验证码过期]", f"{{d}} - 此验证码已过期。当前验证码为【{set_new_otp()}】。 (E21.1)")
-        elif chk == 2:
-            return breakout(mch, "[E21.2验证码无效]", f"{{d}} - 此验证码无效。当前验证码为【{set_new_otp()}】。 (E21.2)")
-        else:
-            raise WhatTheFuckIsThis
-    else:
-        return breakout(
-            mch,
-            "[E21.3验证码缺失]",
-            f"{{d}} - 需要验证码才能执行此操作。当前验证码为【{(val_otp:=set_new_otp())}】。请使用[[nocensor {val_otp}]]。 (E21.3)\n警告：使用此指令造成的一切后果由调用者承担，本机不负任何责任！",
-        )
-
 
 @translator("RST")
 async def Reset(_: Match) -> SupportsStr:
