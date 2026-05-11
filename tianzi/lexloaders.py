@@ -306,7 +306,7 @@ class LexLoader_csset(LexLoader_cset):
         try:
             self.bs
         except AttributeError:
-            self.bs = bson.decode(await self.path.read_bytes())
+            self.bs = cast(dict, bson.loads(await self.path.read_bytes()))
             parent_name = self.bs["name"]
             self.parent = LexLoader.loaded[parent_name]
             self.start_idx = self.bs["start"]
