@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 import fastapi
@@ -50,11 +52,13 @@ async def all_lex_names():
 
 
 @app.get("/list/{name}")
-async def lex_values(name: str):
-    if lex := LexLoader.loaded[name]:
-        return (await lex.data()).keys()
-    else:
-        raise HTTPException(status_code=404, detail=f"词库 {name} 不存在")
+async def lex_values(name: str) -> Sequence[str]:
+    if lex := LexLoader.loaded.get(name):
+        data = await lex.data()
+        if isinstance(data, str):
+            return list(data)
+        return data.keys()
+    raise HTTPException(status_code=404, detail=f"词库 {name} 不存在")
 
 
 @app.get("/meta/{name}", response_class=PlainTextResponse)
