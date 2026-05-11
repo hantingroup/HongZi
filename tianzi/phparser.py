@@ -101,13 +101,6 @@ def translator(pattern: str) -> Callable[[Translator], Translator]:
     return deco
 
 
-def helps():
-    return {
-        translator.__name__: translator.__doc__ or ""
-        for (_, translator) in translators
-    }
-
-
 # 目前已占用的PUA: 0xE000-0xE07F(ASCII转义) 0xE104-0xE500(嵌套指令打包)
 async def translate(text: str, final: bool = False) -> SupportsStr:
     if len(text) > 65535:

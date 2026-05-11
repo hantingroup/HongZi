@@ -166,7 +166,7 @@ class LexLoader(ABC):
         self.meta = LexLoader.Meta()
         self.meta.name = b16decode(path.stem.encode("ASCII")).decode("UTF8")
         LexLoader.loaded[self.meta.name] = self
-        self.meta.filename = f"{path.stem[:8]}{"……" if len(path.stem) > 8 else ""}{path.suffix}"
+        self.meta.filename = path.name
 
     async def show_meta(self) -> str:
         if self.meta.extra is None:
