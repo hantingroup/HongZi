@@ -433,9 +433,9 @@ async def Calculate(mch: Match) -> SupportsStr:
         for name in calc_cache.caches[field]
     }
 
-    # 绿色版不带沙盒功能，直接exec执行
+    from simpleeval import simple_eval
     retvars = {**cache_vars, **inner_cache_vars}
-    retstr = str(eval(main, {"__builtins__": None}, retvars))
+    retstr = simple_eval(main, names=retvars)
     errno = 0
 
     errno: int

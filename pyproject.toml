@@ -18,5 +18,6 @@ dependencies = [
     "regex>=2026.5.9",
     "rn2an>=1.0.0",
     "scipy>=1.17.1",
+    "simpleeval>=1.0.7",
     "uvicorn>=0.46.0",
 ]
